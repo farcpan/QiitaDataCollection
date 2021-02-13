@@ -8,7 +8,7 @@ import time
 import common
 
 
-PER_PAGE = 2
+PER_PAGE = 100
 OUT_PATH = "./output/output.tsv"
 
 
