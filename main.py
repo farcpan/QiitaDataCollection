@@ -58,9 +58,6 @@ def main():
                 print("API Error!")
                 break
 
-            if tag_index > 2:
-                break
-
             for page in range(1, page_num + 1):
                 api_req = url.format(page, PER_PAGE, tag)
                 res = requests.get(api_req, headers=h)
