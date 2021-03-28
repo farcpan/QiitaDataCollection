@@ -8,58 +8,44 @@ import time
 import common
 
 
-OUT_PATH = "./output/output.tsv"
-
-
 def get_args():
     parser = argparse.ArgumentParser(description="Parser for get_tags.")
+    parser.add_argument("token", help="You have to specify your token to access Qiita.com")
     parser.add_argument("tag", help="You have to specify tag to select articles.")
     parser.add_argument("-p", "--page_num", type=int, default=10, help="The number of pages.")
     parser.add_argument("-pp", "--per_page", type=int, default=1, help="The number of items in each page.")
+    parser.add_argument("-o", "--output", default="./output/output.tsv", help="The list of obtained articles.")
     return parser.parse_args()
 
 
-def get_tag_list(path):
-    df = pd.read_table(path, header=None)
-    tag_list = df[0].values
-    return tag_list
-
-
-def check_output_exists():
-    return os.path.exists("./output/output.tsv")
+def check_output_exists(path):
+    return os.path.exists(path)
 
 
 def main():
     args = get_args()
-    page_num = args.page_num
-    per_page = args.per_page
+    token = args.token
     selected_tag = args.tag
-    if page_num < 1:
-        page_num = 1
-    if page_num > 100:
-        page_num = 100
-    if per_page < 1:
-        per_page = 1
-    if per_page > 100:
-        per_page = 100
+    output_path = args.output
+    page_num, per_page = common.get_correct_page_counts(args.page_num, args.per_page)
 
-    h = common.get_header()
+    h = common.get_header(token)
     url = "https://qiita.com/api/v2/items?page={}&per_page={}&query=tag%3A{}"
 
     # for preventing from duplication of the same articles
     already_counted_id_list = []
-    if check_output_exists():
-        df = pd.read_table(OUT_PATH)
+    if check_output_exists(output_path):
+        df = pd.read_table(output_path)
         print(df.head(5))
         already_counted_id_list = df["id"].values
 
     # create new output file if it does not exist.
-    if not os.path.exists(OUT_PATH):
-        with open(OUT_PATH, "w") as f:
+    if not os.path.exists(output_path):
+        with open(output_path, "w") as f:
             f.write("id\ttags\n")
 
     # Qiita API call
-    with open(OUT_PATH, "a") as f:
+    with open(output_path, "a") as f:
         print("----- TAG: {} -----".format(selected_tag))
         for page in range(1, page_num + 1):
             api_req = url.format(page, per_page, selected_tag)
