@@ -55,6 +55,6 @@ For example, if you execute the script with the following arguments,
 $ python get_items.py XXXXXXXXXX Python --page_num=10 --per_page=5 --output=./output/output.tsv
 ```
 
-the maximum number of articles with tag `Python` are `10x5=50`. `XXXXXXXXXX` is your Qiita API token.
+the maximum number of articles with tag `Python` is `10x5=50`. `XXXXXXXXXX` is your Qiita API token.
 
 ---
